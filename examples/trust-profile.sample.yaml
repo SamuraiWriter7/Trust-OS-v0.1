@@ -1,0 +1,34 @@
+trust_profile:
+  profile_id: "trust_profile_creator_7f3a9c"
+
+  contributor_ref:
+    contributor_id: "creator_7f3a9c"
+    identity_mode: "pseudonymous"
+
+  trust_score:
+    overall: 0.83
+    dimensions:
+      structural_insight: 0.90
+      protocol_design: 0.88
+      feedback_quality: 0.72
+    last_updated_at: "2026-04-25T12:34:56Z"
+
+  history:
+    - event_id: "trust_event_2026_0425_001"
+      source_type: "gratitude_mark"
+      source_ref: "gratitude_2026_0425_001"
+      delta: 0.03
+      dimensions_delta:
+        structural_insight: 0.05
+        protocol_design: 0.04
+      reason: "High-level gratitude mark for protocol_seed contribution."
+      timestamp: "2026-04-25T12:34:56Z"
+
+    - event_id: "trust_event_2026_0425_002"
+      source_type: "gratitude_mark"
+      source_ref: "gratitude_2026_0425_002"
+      delta: 0.015
+      dimensions_delta:
+        feedback_quality: 0.02
+      reason: "Medium-level gratitude mark for useful model feedback."
+      timestamp: "2026-04-25T13:10:00Z"
