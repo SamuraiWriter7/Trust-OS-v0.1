@@ -1,0 +1,34 @@
+trust_event:
+  event_id: "trust_event_2026_0425_001"
+
+  source_type: "gratitude_mark"
+  source_ref: "gratitude_2026_0425_001"
+
+  contributor_ref:
+    contributor_id: "creator_7f3a9c"
+    identity_mode: "pseudonymous"
+
+  profile_ref: "trust_profile_creator_7f3a9c"
+
+  delta: 0.0246
+
+  dimensions_delta:
+    structural_insight: 0.0246
+    protocol_design: 0.0246
+
+  reason: "Protocol seed contribution to Gratitude OS."
+
+  timestamp: "2026-04-25T12:34:56Z"
+
+  policy_ref:
+    policy_id: "trust_policy_default"
+    policy_version: "0.1"
+
+  calculation:
+    base_delta: 0.03
+    weight_score: 0.82
+    formula: "delta = base_delta * weight_score"
+
+  metadata:
+    note: "Generated from a high-level gratitude mark with contribution weight 0.82."
+    implementation_status: "sample"
