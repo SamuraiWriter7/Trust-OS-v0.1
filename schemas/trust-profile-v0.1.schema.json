@@ -1,0 +1,227 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://kazene.org/schemas/trust-profile-v0.1.schema.json",
+  "title": "Trust Profile Schema v0.1",
+  "description": "JSON Schema for validating Trust OS v0.1 trust profiles.",
+  "type": "object",
+  "required": [
+    "trust_profile"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "trust_profile": {
+      "type": "object",
+      "description": "Contributor-level trust profile in Trust OS.",
+      "required": [
+        "profile_id",
+        "contributor_ref",
+        "trust_score",
+        "history"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "profile_id": {
+          "type": "string",
+          "description": "Unique identifier for the trust profile.",
+          "minLength": 1,
+          "examples": [
+            "trust_profile_creator_7f3a9c"
+          ]
+        },
+        "contributor_ref": {
+          "type": "object",
+          "description": "Reference to the contributor associated with this trust profile.",
+          "required": [
+            "contributor_id",
+            "identity_mode"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "contributor_id": {
+              "type": "string",
+              "description": "Identifier of the contributor.",
+              "minLength": 1,
+              "examples": [
+                "creator_7f3a9c"
+              ]
+            },
+            "identity_mode": {
+              "type": "string",
+              "description": "Identity mode of the contributor.",
+              "enum": [
+                "public",
+                "pseudonymous",
+                "organization",
+                "ai_agent",
+                "collective",
+                "project",
+                "unknown"
+              ],
+              "examples": [
+                "pseudonymous"
+              ]
+            }
+          }
+        },
+        "trust_score": {
+          "type": "object",
+          "description": "Current aggregated trust state.",
+          "required": [
+            "overall",
+            "dimensions",
+            "last_updated_at"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "overall": {
+              "type": "number",
+              "description": "Overall trust score.",
+              "minimum": 0,
+              "maximum": 1,
+              "examples": [
+                0.83
+              ]
+            },
+            "dimensions": {
+              "type": "object",
+              "description": "Dimension-wise trust scores.",
+              "minProperties": 1,
+              "additionalProperties": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "examples": [
+                {
+                  "structural_insight": 0.9,
+                  "protocol_design": 0.88,
+                  "feedback_quality": 0.72
+                }
+              ]
+            },
+            "last_updated_at": {
+              "type": "string",
+              "description": "Timestamp of the latest trust profile update.",
+              "format": "date-time",
+              "examples": [
+                "2026-04-25T12:34:56Z"
+              ]
+            }
+          }
+        },
+        "history": {
+          "type": "array",
+          "description": "List of trust events contributing to this profile.",
+          "items": {
+            "$ref": "#/$defs/trust_event_summary"
+          },
+          "examples": [
+            [
+              {
+                "event_id": "trust_event_2026_0425_001",
+                "source_type": "gratitude_mark",
+                "source_ref": "gratitude_2026_0425_001",
+                "delta": 0.03,
+                "dimensions_delta": {
+                  "structural_insight": 0.05,
+                  "protocol_design": 0.04
+                },
+                "reason": "High-level gratitude mark for protocol_seed contribution.",
+                "timestamp": "2026-04-25T12:34:56Z"
+              }
+            ]
+          ]
+        }
+      }
+    }
+  },
+  "$defs": {
+    "trust_event_summary": {
+      "type": "object",
+      "description": "Summary of a trust event included in a trust profile history.",
+      "required": [
+        "event_id",
+        "source_type",
+        "source_ref",
+        "delta",
+        "dimensions_delta",
+        "reason",
+        "timestamp"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "event_id": {
+          "type": "string",
+          "description": "Unique identifier of the trust event.",
+          "minLength": 1,
+          "examples": [
+            "trust_event_2026_0425_001"
+          ]
+        },
+        "source_type": {
+          "type": "string",
+          "description": "Type of source signal that generated this trust event.",
+          "enum": [
+            "gratitude_mark",
+            "manual_adjustment",
+            "external_signal",
+            "governance_decision",
+            "audit_correction"
+          ],
+          "examples": [
+            "gratitude_mark"
+          ]
+        },
+        "source_ref": {
+          "type": "string",
+          "description": "Reference to the source record.",
+          "minLength": 1,
+          "examples": [
+            "gratitude_2026_0425_001"
+          ]
+        },
+        "delta": {
+          "type": "number",
+          "description": "Change applied to the overall trust score.",
+          "minimum": -1,
+          "maximum": 1,
+          "examples": [
+            0.03
+          ]
+        },
+        "dimensions_delta": {
+          "type": "object",
+          "description": "Per-dimension trust score changes.",
+          "minProperties": 1,
+          "additionalProperties": {
+            "type": "number",
+            "minimum": -1,
+            "maximum": 1
+          },
+          "examples": [
+            {
+              "structural_insight": 0.05,
+              "protocol_design": 0.04
+            }
+          ]
+        },
+        "reason": {
+          "type": "string",
+          "description": "Human-readable or machine-readable reason for the trust update.",
+          "minLength": 1,
+          "examples": [
+            "High-level gratitude mark for protocol_seed contribution."
+          ]
+        },
+        "timestamp": {
+          "type": "string",
+          "description": "Timestamp of the trust event.",
+          "format": "date-time",
+          "examples": [
+            "2026-04-25T12:34:56Z"
+          ]
+        }
+      }
+    }
+  }
+}
