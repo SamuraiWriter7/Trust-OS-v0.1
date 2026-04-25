@@ -1,0 +1,325 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://kazene.org/schemas/trust-policy-v0.1.schema.json",
+  "title": "Trust Policy Schema v0.1",
+  "description": "JSON Schema for validating Trust OS v0.1 trust policies.",
+  "type": "object",
+  "required": [
+    "trust_policy"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "trust_policy": {
+      "type": "object",
+      "description": "Policy rules for converting gratitude marks and other signals into trust events.",
+      "required": [
+        "policy_id",
+        "version",
+        "base_delta_by_gratitude_level",
+        "dimension_mapping",
+        "weight_scaling"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "policy_id": {
+          "type": "string",
+          "description": "Unique identifier for the trust policy.",
+          "minLength": 1,
+          "examples": [
+            "trust_policy_default"
+          ]
+        },
+        "version": {
+          "type": "string",
+          "description": "Version of the trust policy.",
+          "minLength": 1,
+          "examples": [
+            "0.1"
+          ]
+        },
+        "status": {
+          "type": "string",
+          "description": "Status of this trust policy.",
+          "enum": [
+            "experimental",
+            "draft",
+            "active",
+            "deprecated"
+          ],
+          "examples": [
+            "experimental"
+          ]
+        },
+        "description": {
+          "type": "string",
+          "description": "Human-readable description of the policy.",
+          "minLength": 1,
+          "examples": [
+            "Default Trust OS v0.1 policy for converting gratitude marks into trust events."
+          ]
+        },
+        "base_delta_by_gratitude_level": {
+          "type": "object",
+          "description": "Base trust delta assigned to each gratitude level before scaling.",
+          "required": [
+            "low",
+            "medium",
+            "high",
+            "exceptional"
+          ],
+          "additionalProperties": {
+            "type": "number",
+            "minimum": -1,
+            "maximum": 1
+          },
+          "properties": {
+            "low": {
+              "type": "number",
+              "description": "Base trust delta for low-level gratitude.",
+              "minimum": -1,
+              "maximum": 1,
+              "examples": [
+                0.005
+              ]
+            },
+            "medium": {
+              "type": "number",
+              "description": "Base trust delta for medium-level gratitude.",
+              "minimum": -1,
+              "maximum": 1,
+              "examples": [
+                0.015
+              ]
+            },
+            "high": {
+              "type": "number",
+              "description": "Base trust delta for high-level gratitude.",
+              "minimum": -1,
+              "maximum": 1,
+              "examples": [
+                0.03
+              ]
+            },
+            "exceptional": {
+              "type": "number",
+              "description": "Base trust delta for exceptional gratitude.",
+              "minimum": -1,
+              "maximum": 1,
+              "examples": [
+                0.06
+              ]
+            }
+          }
+        },
+        "dimension_mapping": {
+          "type": "object",
+          "description": "Mapping from Trust OS trust dimensions to Gratitude OS contribution types.",
+          "minProperties": 1,
+          "additionalProperties": {
+            "$ref": "#/$defs/dimension_mapping_rule"
+          },
+          "examples": [
+            {
+              "structural_insight": {
+                "from_contribution_types": [
+                  "structural_insight",
+                  "protocol_seed"
+                ]
+              },
+              "protocol_design": {
+                "from_contribution_types": [
+                  "protocol_seed",
+                  "conceptual_design"
+                ]
+              },
+              "feedback_quality": {
+                "from_contribution_types": [
+                  "model_feedback",
+                  "error_correction"
+                ]
+              }
+            }
+          ]
+        },
+        "weight_scaling": {
+          "type": "object",
+          "description": "Rules for scaling trust delta by contribution weight.",
+          "required": [
+            "enabled",
+            "rule"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "description": "Whether contribution weight scaling is enabled.",
+              "examples": [
+                true
+              ]
+            },
+            "rule": {
+              "type": "string",
+              "description": "Human-readable formula for weight scaling.",
+              "minLength": 1,
+              "examples": [
+                "delta * contribution_weight.score"
+              ]
+            },
+            "weight_field": {
+              "type": "string",
+              "description": "Path to the source contribution weight field.",
+              "minLength": 1,
+              "examples": [
+                "contribution_weight.score"
+              ]
+            }
+          }
+        },
+        "score_bounds": {
+          "type": "object",
+          "description": "Allowed score bounds after profile update.",
+          "required": [
+            "minimum",
+            "maximum"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "minimum": {
+              "type": "number",
+              "description": "Minimum allowed trust score.",
+              "examples": [
+                0
+              ]
+            },
+            "maximum": {
+              "type": "number",
+              "description": "Maximum allowed trust score.",
+              "examples": [
+                1
+              ]
+            }
+          }
+        },
+        "normalization": {
+          "type": "object",
+          "description": "Optional normalization behavior for trust score updates.",
+          "required": [
+            "enabled"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "description": "Whether normalization is enabled.",
+              "examples": [
+                true
+              ]
+            },
+            "method": {
+              "type": "string",
+              "description": "Normalization method.",
+              "enum": [
+                "clamp",
+                "min_max",
+                "sigmoid",
+                "none"
+              ],
+              "examples": [
+                "clamp"
+              ]
+            }
+          }
+        },
+        "event_generation": {
+          "type": "object",
+          "description": "Rules for generating trust events from source signals.",
+          "required": [
+            "default_source_type",
+            "default_formula"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "default_source_type": {
+              "type": "string",
+              "description": "Default source type used for generated trust events.",
+              "enum": [
+                "gratitude_mark",
+                "manual_adjustment",
+                "external_signal",
+                "governance_decision",
+                "audit_correction"
+              ],
+              "examples": [
+                "gratitude_mark"
+              ]
+            },
+            "default_formula": {
+              "type": "string",
+              "description": "Human-readable default formula for generating trust delta.",
+              "minLength": 1,
+              "examples": [
+                "delta = base_delta_by_gratitude_level[gratitude_level] * contribution_weight.score"
+              ]
+            },
+            "preserve_source_reference": {
+              "type": "boolean",
+              "description": "Whether generated trust events must preserve source references.",
+              "examples": [
+                true
+              ]
+            }
+          }
+        },
+        "metadata": {
+          "type": "object",
+          "description": "Optional implementation-specific metadata.",
+          "additionalProperties": true
+        }
+      }
+    }
+  },
+  "$defs": {
+    "dimension_mapping_rule": {
+      "type": "object",
+      "description": "Rule for mapping contribution types to a trust dimension.",
+      "required": [
+        "from_contribution_types"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "from_contribution_types": {
+          "type": "array",
+          "description": "Contribution types that affect this trust dimension.",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "examples": [
+            [
+              "structural_insight",
+              "protocol_seed"
+            ]
+          ]
+        },
+        "dimension_delta_multiplier": {
+          "type": "number",
+          "description": "Optional multiplier applied to the calculated delta for this dimension.",
+          "minimum": -10,
+          "maximum": 10,
+          "examples": [
+            1
+          ]
+        },
+        "description": {
+          "type": "string",
+          "description": "Human-readable explanation of this dimension mapping.",
+          "minLength": 1,
+          "examples": [
+            "Updates structural insight trust when the contribution is classified as structural insight or protocol seed."
+          ]
+        }
+      }
+    }
+  }
+}
