@@ -1,0 +1,214 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://kazene.org/schemas/trust-event-v0.1.schema.json",
+  "title": "Trust Event Schema v0.1",
+  "description": "JSON Schema for validating Trust OS v0.1 trust events.",
+  "type": "object",
+  "required": [
+    "trust_event"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "trust_event": {
+      "type": "object",
+      "description": "A trust event records a trust score change derived from a source signal such as a gratitude mark.",
+      "required": [
+        "event_id",
+        "source_type",
+        "source_ref",
+        "contributor_ref",
+        "delta",
+        "dimensions_delta",
+        "reason",
+        "timestamp"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "event_id": {
+          "type": "string",
+          "description": "Unique identifier for the trust event.",
+          "minLength": 1,
+          "examples": [
+            "trust_event_2026_0425_001"
+          ]
+        },
+        "source_type": {
+          "type": "string",
+          "description": "Type of source signal that generated this trust event.",
+          "enum": [
+            "gratitude_mark",
+            "manual_adjustment",
+            "external_signal",
+            "governance_decision",
+            "audit_correction"
+          ],
+          "examples": [
+            "gratitude_mark"
+          ]
+        },
+        "source_ref": {
+          "type": "string",
+          "description": "Reference to the source record.",
+          "minLength": 1,
+          "examples": [
+            "gratitude_2026_0425_001"
+          ]
+        },
+        "contributor_ref": {
+          "type": "object",
+          "description": "Reference to the contributor whose trust profile is affected by this event.",
+          "required": [
+            "contributor_id",
+            "identity_mode"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "contributor_id": {
+              "type": "string",
+              "description": "Identifier of the contributor.",
+              "minLength": 1,
+              "examples": [
+                "creator_7f3a9c"
+              ]
+            },
+            "identity_mode": {
+              "type": "string",
+              "description": "Identity mode of the contributor.",
+              "enum": [
+                "public",
+                "pseudonymous",
+                "organization",
+                "ai_agent",
+                "collective",
+                "project",
+                "unknown"
+              ],
+              "examples": [
+                "pseudonymous"
+              ]
+            }
+          }
+        },
+        "profile_ref": {
+          "type": "string",
+          "description": "Optional reference to the trust profile updated by this event.",
+          "minLength": 1,
+          "examples": [
+            "trust_profile_creator_7f3a9c"
+          ]
+        },
+        "delta": {
+          "type": "number",
+          "description": "Change applied to the overall trust score.",
+          "minimum": -1,
+          "maximum": 1,
+          "examples": [
+            0.0246
+          ]
+        },
+        "dimensions_delta": {
+          "type": "object",
+          "description": "Per-dimension trust score changes.",
+          "minProperties": 1,
+          "additionalProperties": {
+            "type": "number",
+            "minimum": -1,
+            "maximum": 1
+          },
+          "examples": [
+            {
+              "structural_insight": 0.0246,
+              "protocol_design": 0.0246
+            }
+          ]
+        },
+        "reason": {
+          "type": "string",
+          "description": "Reason for the trust update.",
+          "minLength": 1,
+          "examples": [
+            "Protocol seed contribution to Gratitude OS."
+          ]
+        },
+        "timestamp": {
+          "type": "string",
+          "description": "Timestamp of the trust event.",
+          "format": "date-time",
+          "examples": [
+            "2026-04-25T12:34:56Z"
+          ]
+        },
+        "policy_ref": {
+          "type": "object",
+          "description": "Optional reference to the trust policy used to calculate this event.",
+          "required": [
+            "policy_id",
+            "policy_version"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "policy_id": {
+              "type": "string",
+              "description": "Identifier of the trust policy.",
+              "minLength": 1,
+              "examples": [
+                "trust_policy_default"
+              ]
+            },
+            "policy_version": {
+              "type": "string",
+              "description": "Version of the trust policy.",
+              "minLength": 1,
+              "examples": [
+                "0.1"
+              ]
+            }
+          }
+        },
+        "calculation": {
+          "type": "object",
+          "description": "Optional calculation details for auditability.",
+          "required": [
+            "base_delta",
+            "weight_score",
+            "formula"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "base_delta": {
+              "type": "number",
+              "description": "Base trust delta before scaling.",
+              "minimum": -1,
+              "maximum": 1,
+              "examples": [
+                0.03
+              ]
+            },
+            "weight_score": {
+              "type": "number",
+              "description": "Contribution weight used to scale the delta.",
+              "minimum": 0,
+              "maximum": 1,
+              "examples": [
+                0.82
+              ]
+            },
+            "formula": {
+              "type": "string",
+              "description": "Human-readable formula used for the calculation.",
+              "minLength": 1,
+              "examples": [
+                "delta = base_delta * weight_score"
+              ]
+            }
+          }
+        },
+        "metadata": {
+          "type": "object",
+          "description": "Optional implementation-specific metadata.",
+          "additionalProperties": true
+        }
+      }
+    }
+  }
+}
