@@ -1,6 +1,8 @@
 # Trust-OS-v0.1
 Trust OS is the trust layer between Gratitude OS and Royalty OS.  It aggregates individual gratitude marks into contributor-level trust profiles, converting recognition into a continuous trust state.
 
+![Validate Trust OS Specs](https://github.com/SamuraiWriter7/Trust-OS-v0.1/actions/workflows/validate-specs.yml/badge.svg)
+
 **Trust OS is the trust layer between Gratitude OS and Royalty OS.**  
 It aggregates gratitude marks into evolving trust profiles.  
 It provides a non-monetary bridge from recognition to future value allocation.
@@ -456,7 +458,7 @@ That is the core idea of Trust OS.
 
 ## Validation
 
-Trust OS examples can be validated against the JSON Schemas using GitHub Actions.
+Trust OS examples are validated against their JSON Schemas using GitHub Actions.
 
 The workflow validates:
 
@@ -470,4 +472,4 @@ against:
 - `schemas/trust-event-v0.1.schema.json`
 - `schemas/trust-policy-v0.1.schema.json`
 
-This ensures that Trust OS remains both human-readable and machine-verifiable.
+A successful workflow run means that the Trust OS v0.1 examples are machine-verifiable.
