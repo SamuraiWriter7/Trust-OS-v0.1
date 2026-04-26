@@ -1,0 +1,151 @@
+name: Validate Trust OS Specs
+
+on:
+  push:
+    paths:
+      - "schemas/**"
+      - "examples/**"
+      - ".github/workflows/validate-specs.yml"
+  pull_request:
+    paths:
+      - "schemas/**"
+      - "examples/**"
+      - ".github/workflows/validate-specs.yml"
+  workflow_dispatch:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install "jsonschema[format]" PyYAML
+
+      - name: Debug file tree
+        run: |
+          pwd
+          find . -maxdepth 4 -type f | sort
+
+      - name: Validate Trust OS examples against schemas
+        run: |
+          python - <<'PY'
+          import json
+          import sys
+          from pathlib import Path
+
+          import yaml
+          from jsonschema import Draft202012Validator, FormatChecker
+
+          VALIDATION_TARGETS = [
+              {
+                  "name": "trust-profile",
+                  "schema": "schemas/trust-profile-v0.1.schema.json",
+                  "example": "examples/trust-profile.sample.yaml",
+              },
+              {
+                  "name": "trust-event",
+                  "schema": "schemas/trust-event-v0.1.schema.json",
+                  "example": "examples/trust-event.sample.yaml",
+              },
+              {
+                  "name": "trust-policy",
+                  "schema": "schemas/trust-policy-v0.1.schema.json",
+                  "example": "examples/trust-policy.sample.yaml",
+              },
+          ]
+
+          def load_json(path: Path):
+              with path.open("r", encoding="utf-8") as f:
+                  return json.load(f)
+
+          def load_yaml(path: Path):
+              with path.open("r", encoding="utf-8") as f:
+                  return yaml.safe_load(f)
+
+          def main() -> int:
+              print("Validating Trust OS specification examples...")
+              print()
+
+              failed = False
+
+              for target in VALIDATION_TARGETS:
+                  name = target["name"]
+                  schema_path = Path(target["schema"])
+                  example_path = Path(target["example"])
+
+                  print(f"Checking {name}...")
+                  print(f"  Schema : {schema_path}")
+                  print(f"  Example: {example_path}")
+
+                  if not schema_path.exists():
+                      print(f"  ERROR: schema file not found: {schema_path}")
+                      failed = True
+                      print()
+                      continue
+
+                  if not example_path.exists():
+                      print(f"  ERROR: example file not found: {example_path}")
+                      failed = True
+                      print()
+                      continue
+
+                  try:
+                      schema = load_json(schema_path)
+                      example = load_yaml(example_path)
+                  except Exception as e:
+                      print(f"  ERROR: failed to load files: {e}")
+                      failed = True
+                      print()
+                      continue
+
+                  try:
+                      Draft202012Validator.check_schema(schema)
+                  except Exception as e:
+                      print(f"  ERROR: invalid JSON Schema: {e}")
+                      failed = True
+                      print()
+                      continue
+
+                  validator = Draft202012Validator(
+                      schema,
+                      format_checker=FormatChecker()
+                  )
+
+                  errors = sorted(
+                      validator.iter_errors(example),
+                      key=lambda error: list(error.path)
+                  )
+
+                  if errors:
+                      print("  ERROR: validation failed")
+                      for error in errors:
+                          path = ".".join(str(part) for part in error.path)
+                          if not path:
+                              path = "<root>"
+                          print(f"    - {path}: {error.message}")
+                      failed = True
+                  else:
+                      print("  OK")
+
+                  print()
+
+              if failed:
+                  print("Validation failed.")
+                  return 1
+
+              print("All Trust OS examples are valid.")
+              return 0
+
+          if __name__ == "__main__":
+              sys.exit(main())
+          PY
