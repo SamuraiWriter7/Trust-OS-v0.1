@@ -453,3 +453,21 @@ Royalty OS may later convert that accumulated trust into structured value alloca
 Trust begins before money.
 
 That is the core idea of Trust OS.
+
+## Validation
+
+Trust OS examples can be validated against the JSON Schemas using GitHub Actions.
+
+The workflow validates:
+
+- `examples/trust-profile.sample.yaml`
+- `examples/trust-event.sample.yaml`
+- `examples/trust-policy.sample.yaml`
+
+against:
+
+- `schemas/trust-profile-v0.1.schema.json`
+- `schemas/trust-event-v0.1.schema.json`
+- `schemas/trust-policy-v0.1.schema.json`
+
+This ensures that Trust OS remains both human-readable and machine-verifiable.
