@@ -1,0 +1,57 @@
+trust_policy:
+  policy_id: "trust_policy_default"
+  version: "0.1"
+  status: "experimental"
+
+  description: "Default Trust OS v0.1 policy for converting gratitude marks into trust events."
+
+  base_delta_by_gratitude_level:
+    low: 0.005
+    medium: 0.015
+    high: 0.03
+    exceptional: 0.06
+
+  dimension_mapping:
+    structural_insight:
+      from_contribution_types:
+        - "structural_insight"
+        - "protocol_seed"
+      dimension_delta_multiplier: 1.0
+      description: "Updates structural insight trust when the contribution is classified as structural insight or protocol seed."
+
+    protocol_design:
+      from_contribution_types:
+        - "protocol_seed"
+        - "conceptual_design"
+      dimension_delta_multiplier: 1.0
+      description: "Updates protocol design trust when the contribution supports protocol or conceptual design."
+
+    feedback_quality:
+      from_contribution_types:
+        - "model_feedback"
+        - "error_correction"
+      dimension_delta_multiplier: 1.0
+      description: "Updates feedback quality trust when the contribution improves model behavior or corrects errors."
+
+  weight_scaling:
+    enabled: true
+    rule: "delta * contribution_weight.score"
+    weight_field: "contribution_weight.score"
+
+  score_bounds:
+    minimum: 0
+    maximum: 1
+
+  normalization:
+    enabled: true
+    method: "clamp"
+
+  event_generation:
+    default_source_type: "gratitude_mark"
+    default_formula: "delta = base_delta_by_gratitude_level[gratitude_level] * contribution_weight.score"
+    preserve_source_reference: true
+
+  metadata:
+    implementation_status: "sample"
+    intended_use: "Gratitude OS to Trust OS conversion"
+    note: "This policy is experimental and non-monetary."
